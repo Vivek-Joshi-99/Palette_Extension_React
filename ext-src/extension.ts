@@ -1,12 +1,20 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
+import fetch from 'node-fetch';
 
 export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('react-webview.start', () => {
+		// TG();
 		ReactPanel.createOrShow(context.extensionPath);
 	}));
 }
+
+// async function TG(){
+// 	const response = await fetch(`https://api.spectrocloud.com/v1/dashboard/projects?ApiKey=YmU5OTY4M2QxZDQxMzZlZWJjMzE1NDkwYTNhNmVkOTY=`);
+// 	const jsonData = await response.json();
+// 	console.log(jsonData);
+// }
 
 /**
  * Manages react webview panels
@@ -42,11 +50,13 @@ class ReactPanel {
 		this._panel = vscode.window.createWebviewPanel(ReactPanel.viewType, "React", column, {
 			// Enable javascript in the webview
 			enableScripts: true,
+    		retainContextWhenHidden: true,
+    		enableCommandUris: true
 
-			// And restric the webview to only loading content from our extension's `media` directory.
-			localResourceRoots: [
-				vscode.Uri.file(path.join(this._extensionPath, 'build'))
-			]
+			// // And restric the webview to only loading content from our extension's `media` directory.
+			// localResourceRoots: [
+			// 	vscode.Uri.file(path.join(this._extensionPath, 'build'))
+			// ]
 		});
 		
 		// Set the webview's initial html content 
@@ -98,16 +108,15 @@ class ReactPanel {
 
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
-
 		return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
+				<meta http-equiv="Content-Security-Policy" content="default-src https://cors-proxy.htmldriven.com/ https://api.spectrocloud.com/; img-src vscode-resource: https:;connect-src https://cors-proxy.htmldriven.com/ https://api.spectrocloud.com/; script-src 'nonce-${nonce}' https://cors-proxy.htmldriven.com/ https://api.spectrocloud.com/;style-src vscode-resource: 'unsafe-inline' http: https: data:;">	
 				<meta charset="utf-8">
 				<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 				<meta name="theme-color" content="#000000">
 				<title>React App</title>
 				<link rel="stylesheet" type="text/css" href="${styleUri}">
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}';style-src vscode-resource: 'unsafe-inline' http: https: data:;">
 				<base href="${vscode.Uri.file(path.join(this._extensionPath, 'build')).with({ scheme: 'vscode-resource' })}/">
 			</head>
 
