@@ -16,7 +16,7 @@ export default function PaletteApiKey() {
     //     setProjectList({proj:'Def',proj2:'Viv'});
     // }, 3000);
     const response = await fetch(
-      `https://api.spectrocloud.com/v1/dashboard/projects?ApiKey=YmU5OTY4M2QxZDQxMzZlZWJjMzE1NDkwYTNhNmVkOTY=`,{mode:'no-cors'}
+      `https://api.spectrocloud.com/v1/dashboard/projects?ApiKey=${apiKey}`,{mode:'no-cors'}
     );
     const jsonData = await response.json();
     setProjectList(jsonData);
